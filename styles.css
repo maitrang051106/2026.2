@@ -1,0 +1,17 @@
+:root { --p: #2c3e50; --s: #3498db; --bg: #f4f7f6; }
+body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+.menu-container, .quiz-container { width: 100%; max-width: 700px; }
+.hidden { display: none; }
+h1 { color: var(--p); text-align: center; }
+
+/* Style cho Menu */
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
+.btn-chuong { padding: 20px; background: white; border: 2px solid var(--s); border-radius: 12px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+.btn-chuong:hover { background: var(--s); color: white; }
+
+/* Style cho Flashcard */
+.flashcard { background: white; padding: 20px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; border-left: 5px solid var(--s); }
+.question { font-weight: bold; color: var(--p); }
+.answer { max-height: 0; overflow: hidden; transition: 0.3s; color: #666; font-style: italic; margin-top: 10px; border-top: 0px solid #eee; }
+.flashcard.active .answer { max-height: 200px; padding-top: 10px; border-top-width: 1px; }
+.back-btn { margin-bottom: 20px; padding: 10px 20px; cursor: pointer; background: var(--p); color: white; border: none; border-radius: 5px; }
