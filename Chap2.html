@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn tập Hệ điều hành - Flashcards</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .section-title {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .flashcard {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            overflow: hidden;
+            border-left: 5px solid var(--secondary-color);
+        }
+
+        .flashcard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .question {
+            padding: 20px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .question::after {
+            content: '▼';
+            font-size: 0.8rem;
+            color: #999;
+            transition: transform 0.3s;
+        }
+
+        .flashcard.active .question::after {
+            transform: rotate(180deg);
+        }
+
+        .answer {
+            max-height: 0;
+            padding: 0 20px;
+            background-color: #f9f9f9;
+            transition: max-height 0.3s ease-out, padding 0.3s ease;
+            border-top: 1px solid #eee;
+            color: #555;
+            font-style: italic;
+        }
+
+        .flashcard.active .answer {
+            max-height: 200px; /* Adjust if answer is very long */
+            padding: 20px;
+        }
+
+        .status-bar {
+            position: sticky;
+            top: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🚀 Flashcards Ôn tập Hệ điều hành</h1>
+    <div class="status-bar">Click vào câu hỏi để xem đáp án</div>
+
+    <div class="container" id="flashcard-container">
+        </div>
+
+    <script>
+        const data = [
+            { type: 'section', title: 'PHẦN 1: KHÁI NIỆM TIẾN TRÌNH VÀ LUỒNG (PROCESS & THREAD)' },
+            { q: "Câu 1: Sự khác biệt cơ bản giữa tiến trình và chương trình là gì?", a: "Tiến trình là một thực thể chủ động (chương trình đang thực thi, có Program Counter và trạng thái), còn chương trình là thực thể thụ động (nội dung lưu trên đĩa)." },
+            { q: "Câu 2: Vùng nhớ nào của tiến trình có kích thước thay đổi theo thời gian trong quá trình chạy?", a: "Vùng dynamic data (Heap/Stack)." },
+            { q: "Câu 3: Trong cấu trúc Khối điều khiển tiến trình (PCB), nội dung các thanh ghi phục vụ cho hoạt động của CPU được lưu ở thành phần nào?", a: "Ngữ cảnh tiến trình (Context)." },
+            { q: "Câu 4: Khi một tiến trình đang thực thi mà yêu cầu chờ thao tác nhập/xuất (I/O) hoàn tất, nó sẽ chuyển sang trạng thái nào và nằm ở đâu?", a: "Chuyển sang trạng thái Chờ đợi (Blocked/Waiting) và được đưa vào Danh sách chờ đợi (Device Queue / Waiting list)." },
+            { q: "Câu 5: Tiến trình chuyển từ trạng thái Running (Thực hiện) sang trạng thái Ready (Sẵn sàng) khi nào?", a: "Khi hết thời gian sử dụng Processor vật lý (hết lượng tử thời gian) hoặc bị tước quyền (trưng dụng)." },
+            { q: "Câu 6: Một tiến trình khi được cấp phát đủ tài nguyên chỉ còn thiếu CPU tức là nó đã ở trạng thái nào?", a: "Sẵn sàng (Ready)." },
+            { q: "Câu 7: Trong quá trình chuyển đổi ngữ cảnh (Context Switch), thông tin nào bắt buộc phải được lưu trữ?", a: "Program counter (Bộ đếm lệnh), giá trị các thanh ghi và thông tin về trạng thái tiến trình." },
+            { q: "Câu 8: Các luồng (Thread) trong cùng một tiến trình sẽ chia sẻ chung những tài nguyên nào?", a: "Mã lệnh (Code), dữ liệu (Data/biến toàn cục) và các tài nguyên hệ thống (như file đang mở)." },
+            { q: "Câu 9: Các luồng trong cùng một tiến trình KHÔNG chia sẻ tài nguyên nào cho nhau?", a: "Không gian ngăn xếp (Stack) và tập thanh ghi riêng." },
+            { q: "Câu 10: Chọn giải thích hợp lý nhất cho phát biểu: 'Tiến trình đa luồng nhanh hơn tiến trình đơn luồng'?", a: "Đúng khi tiến trình phải thực hiện nhiều tính toán phức tạp song song hoặc khi chạy trên hệ thống đa vi xử lý." },
+            { q: "Câu 11: Trong hệ điều hành Windows, cơ chế nào được sử dụng để tạo tiến trình mới?", a: "Hàm API CreateProcess() tạo tiến trình mới hoàn toàn." },
+
+            { type: 'section', title: 'PHẦN 2: ĐIỀU PHỐI CPU (CPU SCHEDULING)' },
+            { q: "Câu 12: Phát biểu nào sau đây ĐÚNG về bộ điều phối CPU (Short-term Scheduler)?", a: "Yêu cầu tốc độ thực hiện phải cực kỳ nhanh và hoạt động rất thường xuyên để lựa chọn tiến trình từ Ready Queue." },
+            { q: "Câu 13: Bộ điều phối công việc (Job Scheduler / Long-term Scheduler) có nhiệm vụ chính là gì?", a: "Được thực hiện không thường xuyên, làm nhiệm vụ quyết định số tiến trình tồn tại đồng thời trong bộ nhớ (mức độ đa chương trình) và đảm bảo tỷ lệ hợp lý giữa tiến trình thiên về I/O và tính toán." },
+            { q: "Câu 14: Hàng đợi nào KHÔNG CÓ trong kiến trúc quản lý tiến trình của hệ điều hành?", a: "Program Queue (Hàng đợi chương trình)." },
+            { q: "Câu 15: Đặc điểm nào KHÔNG PHẢI là của thuật giải FCFS (First Come - First Serve)?", a: "Thời gian chờ đợi trung bình nhỏ (Thực tế FCFS thường có thời gian chờ đợi trung bình lớn do hiệu ứng đoàn tàu)." },
+            { q: "Câu 16: Đâu là nhược điểm lớn nhất của thuật giải SJF (Shortest Job First)?", a: "Tiến trình dài có nguy cơ không bao giờ kết thúc được (gây ra tình trạng Starvation - đói CPU)." },
+            { q: "Câu 17: Trong các chiến lược điều phối CPU, thuật toán nào được kỳ vọng mang lại thời gian chờ đợi trung bình nhỏ nhất?", a: "SJF (Công việc ngắn nhất thực hiện trước) hoặc SRTF (Shortest Remaining Time First)." },
+            { q: "Câu 18: Nhận xét nào KHÔNG CHÍNH XÁC về thuật toán điều phối Round Robin (RR)?", a: "'RR ưu tiên cho các tiến trình có thời gian sử dụng CPU ngắn' (Sai, vì RR đối xử công bằng với mọi tiến trình qua lượng tử thời gian)." },
+            { q: "Câu 19: Tình trạng một tiến trình phải chờ đợi CPU lâu vô hạn (Starvation) CÓ THỂ xảy ra trong các chiến lược điều phối nào?", a: "SJF và SRTF (Các tiến trình ngắn liên tục xuất hiện sẽ chiếm hết CPU của tiến trình dài)." },
+            { q: "Câu 20: Điều phối có trưng dụng (Preemptive) xảy ra trong trường hợp nào?", a: "HĐH có thể tước CPU từ tiến trình đang chạy khi nó hết thời gian lượng tử hoặc có tiến trình ưu tiên cao hơn xuất hiện." },
+
+            { type: 'section', title: 'PHẦN 3: ĐỒNG BỘ TIẾN TRÌNH & TÀI NGUYÊN GĂNG' },
+            { q: "Câu 21: Tài nguyên găng (Critical Resource) của hệ thống là gì?", a: "Là tài nguyên bị hạn chế về khả năng phục vụ đồng thời nhưng lại được yêu cầu đồng thời cho nhiều tiến trình." },
+            { q: "Câu 22: Đoạn găng (Critical Section) là gì?", a: "Là đoạn chương trình có chứa các câu lệnh thao tác, xử lý trên tài nguyên găng." },
+            { q: "Câu 23: Giải thuật điều độ tiến trình qua đoạn găng KHÔNG đòi hỏi điều kiện bắt buộc nào dưới đây?", a: "Tiến trình không được sử dụng processor khi đang đứng đợi tài nguyên găng (Thực tế các giải pháp cấp thấp như Spinlock vẫn dùng processor để chờ đợi tích cực)." },
+            { q: "Câu 24: Phương pháp 'Khóa trong' gặp phải vấn đề cốt lõi nào chưa giải quyết được?", a: "Chưa giải quyết triệt để tính loại trừ lẫn nhau và tính tiến triển (do việc kiểm tra khóa và đóng khóa bị tách rời)." },
+            { q: "Câu 25: Phương pháp 'Kiểm tra và xác lập' (TestAndSet) còn tồn tại nhược điểm lớn nào?", a: "Gây ra hiện tượng chờ đợi tích cực (Busy waiting) và không đảm bảo điều kiện chờ đợi hữu hạn." },
+            { q: "Câu 26: Giải thuật Dekker điều độ tiến trình qua đoạn găng KHÔNG đảm bảo điều kiện nào?", a: "Tiến trình không sử dụng processor khi đợi tới lượt (Vẫn bị Busy Waiting)." },
+            { q: "Câu 27: Giải thuật điều độ nào được công nhận là KHÔNG gây ra hiện tượng chờ đợi tích cực (Busy Waiting)?", a: "Kỹ thuật đèn báo (Semaphore) và Monitor." },
+            { q: "Câu 28: Kỹ thuật Semaphore khác Mutex ở điểm cơ bản nào?", a: "Semaphore (đếm) có thể có giá trị lớn hơn 1 (dùng để quản lý n tài nguyên giống nhau), trong khi Mutex chỉ có giá trị 0 hoặc 1." },
+            { q: "Câu 29: Trong bài toán Sản xuất - Tiêu thụ với bộ đệm hữu hạn (Producer - Consumer), biến semaphore empty thường được khởi tạo giá trị bằng bao nhiêu?", a: "Bằng kích thước tối đa của bộ đệm (BUFFER_SIZE)." },
+
+            { type: 'section', title: 'PHẦN 4: BẾ TẮC (DEADLOCK) VÀ XỬ LÝ BẾ TẮC' },
+            { q: "Câu 30: Bế tắc (Deadlock) là tình trạng như thế nào?", a: "Là tình trạng hai hay nhiều tiến trình cùng chờ đợi vô hạn một sự kiện mà sự kiện đó chỉ có thể xảy ra do một tiến trình khác trong nhóm đang bị chờ đợi thực hiện." },
+            { q: "Câu 31: Điều kiện nào dưới đây KHÔNG NẰM TRONG 4 điều kiện cần thiết để sinh ra bế tắc?", a: "Có hệ thống phân phối lại tài nguyên (Sự thật là hệ thống KHÔNG ĐƯỢC phép trưng dụng tài nguyên mới sinh ra bế tắc)." },
+            { q: "Câu 32: Trong đồ thị cấp phát tài nguyên (RAG), một cung đi từ đỉnh Tiến trình (P) tới đỉnh Tài nguyên (R) biểu diễn điều gì?", a: "Tiến trình P đang yêu cầu (xin cấp phát) tài nguyên R." },
+            { q: "Câu 33: Chọn phát biểu KHÔNG CHÍNH XÁC về 'Đồ thị chờ đợi' (Wait-for graph):", a: "'Sử dụng để chỉ ra bế tắc khi các tài nguyên có nhiều đơn vị' (Sai, đồ thị chờ đợi chỉ hiệu quả để kết luận bế tắc khi mỗi tài nguyên chỉ có đúng 1 đơn vị)." },
+            { q: "Câu 34: Mối quan hệ giữa chu trình trên đồ thị RAG và bế tắc là gì?", a: "Nếu trên đồ thị có chu trình, và mỗi tài nguyên chỉ có 1 đơn vị thì chắc chắn có bế tắc. Nếu tài nguyên có nhiều đơn vị thì chỉ là CÓ THỂ bị bế tắc." },
+            { q: "Câu 35: Phương pháp 'Phòng ngừa bế tắc' (Prevention) thường được áp dụng cho hệ thống có đặc điểm gì?", a: "Hệ thống hay xảy ra bế tắc và tổn thất do bế tắc gây ra là rất lớn." },
+            { q: "Câu 36: Lớp giải thuật 'Dự báo và phòng tránh bế tắc' (Avoidance) được áp dụng cho hệ thống nào?", a: "Ít xảy ra bế tắc nhưng tổn hại do bế tắc gây ra là lớn." },
+            { q: "Câu 37: Lớp giải thuật 'Nhận biết và khắc phục bế tắc' được áp dụng cho hệ thống nào?", a: "Ít xảy ra bế tắc và tổn hại do bế tắc gây ra là nhỏ (không đáng kể)." },
+            { q: "Câu 38: Giải thuật 'Con đà điểu' (Bỏ qua bế tắc) được sử dụng khi hệ thống có tần suất:", a: "Xảy ra bế tắc cực kỳ thấp và tổn thất do bế tắc gây ra không đáng kể." },
+            { q: "Câu 39: Hãy cho biết phát biểu nào dưới đây về 'Thuật toán người quản lý nhà băng' (Banker's Algorithm) là ĐÚNG?", a: "Được sử dụng để phòng tránh (ngăn ngừa) bế tắc xảy ra bằng cách chỉ cấp phát khi hệ thống duy trì ở trạng thái An toàn." },
+            { q: "Câu 40: Thuật toán Nhà băng yêu cầu phải biết trước thông tin gì từ các tiến trình?", a: "Yêu cầu phải biết trước nhu cầu sử dụng cực đại (Max Need) của mỗi tiến trình đối với từng loại tài nguyên." },
+            { q: "Câu 41: Trong các phương pháp khắc phục bế tắc, để giảm chi phí khi phải 'roll back' (quay lui) các tiến trình, hệ thống thường làm gì?", a: "Định kỳ sao lưu/ghi lại các thông tin trạng thái của tiến trình (Checkpointing)." },
+            { q: "Câu 42: Khi sử dụng biện pháp 'Trưng dụng tài nguyên' để khắc phục bế tắc, hệ thống có thể gặp phải nguy cơ gì đối với tiến trình bị trưng dụng?", a: "Nguy cơ đói tài nguyên (Starvation) nếu một tiến trình liên tục bị chọn làm nạn nhân để tước đoạt." },
+            { q: "Câu 43: Phương pháp yêu cầu tiến trình 'xin tất cả tài nguyên cùng một lúc trước khi chạy' là nhằm phá vỡ điều kiện nào của bế tắc?", a: "Điều kiện Giữ và chờ đợi (Hold and Wait)." },
+            { q: "Câu 44: Kỹ thuật SPOOL (như máy in ảo) được dùng để phá vỡ điều kiện nào của bế tắc?", a: "Điều kiện Tài nguyên găng (Biến tài nguyên độc quyền thành tài nguyên có thể phân chia/dùng chung ảo)." },
+            { q: "Câu 45: Trong thuật toán Banker, trạng thái 'An toàn' (Safe State) mang ý nghĩa gì?", a: "Là trạng thái mà hệ thống có thể tìm ra ít nhất một chuỗi cấp phát tài nguyên tuần tự cho tất cả các tiến trình để chúng đều có thể hoàn thành mà không gây ra deadlock." }
+        ];
+
+        const container = document.getElementById('flashcard-container');
+
+        data.forEach(item => {
+            if (item.type === 'section') {
+                const title = document.createElement('div');
+                title.className = 'section-title';
+                title.innerText = item.title;
+                container.appendChild(title);
+            } else {
+                const card = document.createElement('div');
+                card.className = 'flashcard';
+                card.innerHTML = `
+                    <div class="question">${item.q}</div>
+                    <div class="answer">${item.a}</div>
+                `;
+                card.onclick = () => card.classList.toggle('active');
+                container.appendChild(card);
+            }
+        });
+    </script>
+</body>
+</html>
